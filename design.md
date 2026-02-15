@@ -897,14 +897,56 @@ Attributes:
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
+| POST | /auth/register | User registration |
+| POST | /auth/login | User login |
+| POST | /auth/refresh | Refresh access token |
+| POST | /auth/logout | User logout |
 | POST | /upload/presigned-url | Get presigned URL for video upload |
 | POST | /jobs | Create new processing job |
 | GET | /jobs/{job_id} | Get job status |
 | GET | /jobs/{job_id}/catalog | Get generated catalog |
 | PUT | /catalogs/{catalog_id} | Update catalog (add prices) |
+| DELETE | /catalogs/{catalog_id} | Delete draft catalog |
 | POST | /catalogs/{catalog_id}/publish | Publish to ONDC |
+| GET | /users/me | Get current user profile |
+| PUT | /users/me | Update user profile |
 
 ### 7.2 API Request/Response Examples
+
+**POST /auth/register**
+```json
+// Request
+{
+  "email": "shopkeeper@example.com",
+  "password": "SecurePassword123!",
+  "name": "My Kirana Store",
+  "phone": "+919876543210"
+}
+
+// Response
+{
+  "user_id": "550e8400-e29b-41d4-a716-446655440000",
+  "email": "shopkeeper@example.com",
+  "message": "Registration successful"
+}
+```
+
+**POST /auth/login**
+```json
+// Request
+{
+  "email": "shopkeeper@example.com",
+  "password": "SecurePassword123!"
+}
+
+// Response
+{
+  "access_token": "eyJhbGciOiJSUzI1NiIs...",
+  "refresh_token": "eyJhbGciOiJSUzI1NiIs...",
+  "expires_in": 3600,
+  "token_type": "Bearer"
+}
+```
 
 **POST /upload/presigned-url**
 ```json
@@ -970,6 +1012,35 @@ Attributes:
   }
 }
 ```
+
+### 7.3 Error Response Schema
+
+```json
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid video format. Please upload MP4 format.",
+    "details": {
+      "field": "content_type",
+      "expected": "video/mp4",
+      "received": "video/mov"
+    },
+    "request_id": "req-1234567890",
+    "timestamp": "2026-02-15T10:30:00Z"
+  }
+}
+```
+
+**Error Codes:**
+| Code | HTTP Status | Description |
+|------|-------------|-------------|
+| VALIDATION_ERROR | 400 | Invalid input parameters |
+| UNAUTHORIZED | 401 | Missing or invalid token |
+| FORBIDDEN | 403 | Insufficient permissions |
+| NOT_FOUND | 404 | Resource not found |
+| RATE_LIMITED | 429 | Too many requests |
+| INTERNAL_ERROR | 500 | Server error |
+| SERVICE_UNAVAILABLE | 503 | Temporary service outage |
 
 ---
 
@@ -1214,6 +1285,72 @@ def invoke_bedrock_with_retry(model_id, body):
 | Product detection returns empty | Flag for manual entry |
 | Similarity search unavailable | Generate all images (no reuse) |
 | ONDC formatting fails | Return raw JSON for manual formatting |
+
+### 11.4 Dead Letter Queue Strategy
+
+```python
+# Lambda: FilterFrames with DLQ
+def handler(event, context):
+    try:
+        frames = event['frames']
+        # ... processing logic ...
+        return {'qualityFrames': quality_frames}
+    except Exception as e:
+        # Send to DLQ for investigation
+        send_to_dlq({
+            'event': event,
+            'error': str(e),
+            'timestamp': datetime.utcnow().isoformat()
+        })
+        raise  # Re-raise to trigger Lambda retry
+```
+
+**DLQ Configuration:**
+- SQS Queue: `kiranastudio-dlq`
+- Retention: 14 days
+- Retry: 3 attempts before moving to DLQ
+- Alert: CloudWatch Alarm on DLQ message count
+
+### 11.5 Circuit Breaker Pattern
+
+```python
+from botocore.config import Config
+
+# Bedrock client with retry and circuit breaker
+bedrock_config = Config(
+    retries={'max_attempts': 3, 'mode': 'adaptive'},
+    connect_timeout=5,
+    read_timeout=30
+)
+
+# Implement circuit breaker using custom decorator
+class CircuitBreaker:
+    def __init__(self, failure_threshold=5, recovery_timeout=60):
+        self.failure_count = 0
+        self.failure_threshold = failure_threshold
+        self.recovery_timeout = recovery_timeout
+        self.last_failure_time = None
+        self.state = 'CLOSED'  # CLOSED, OPEN, HALF_OPEN
+    
+    def call(self, func):
+        if self.state == 'OPEN':
+            if time.time() - self.last_failure_time > self.recovery_timeout:
+                self.state = 'HALF_OPEN'
+            else:
+                raise CircuitOpenException('Circuit breaker is open')
+        
+        try:
+            result = func()
+            self.failure_count = 0
+            self.state = 'CLOSED'
+            return result
+        except Exception as e:
+            self.failure_count += 1
+            self.last_failure_time = time.time()
+            if self.failure_count >= self.failure_threshold:
+                self.state = 'OPEN'
+            raise
+```
 
 ---
 

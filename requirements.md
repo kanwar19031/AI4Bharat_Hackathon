@@ -616,6 +616,27 @@ Reference: ONDC Protocol Specs [github.com/ONDC-Official/ONDC-Protocol-Specs]
 
 ---
 
-**Document Version:** 1.0  
+## Appendix C: Traceability Matrix
+
+| FR ID | Requirement | Design Section | Component |
+|-------|-------------|----------------|-----------|
+| FR-VC-001 to FR-VC-009 | Video Capture Module | UI Screens (Section 8.2) | Mobile App |
+| FR-VU-001 to FR-VU-007 | Video Upload Module | 4.1 Video Upload Service | Lambda: GeneratePresignedURL |
+| FR-FE-001 to FR-FE-005 | Frame Extraction Module | 4.2 Frame Extraction Service | MediaConvert |
+| FR-FF-001 to FR-FF-006 | Frame Quality Filter Module | 4.3 Frame Filter Service, 8.1, 8.2 | Lambda: FilterFrames |
+| FR-PD-001 to FR-PD-009 | Product Detection Module | 4.4 Product Detection Service | Claude 3.5 Haiku |
+| FR-DD-001 to FR-DD-004 | Product Deduplication Module | 4.5 Product Deduplication Service | Lambda: DeduplicateProducts |
+| FR-EG-001 to FR-EG-004 | Embedding Generation Module | 4.6 Embedding Generation Service | Titan Embeddings |
+| FR-SS-001 to FR-SS-006 | Similarity Search Module | 4.7 Similarity Search Service | OpenSearch Serverless |
+| FR-IG-001 to FR-IG-007 | Studio Image Generation Module | 4.8 Studio Image Generation Service | Titan Image Generator |
+| FR-CF-001 to FR-CF-007 | ONDC Catalog Formatting Module | 4.9 ONDC Formatting Service | Lambda: FormatONDC |
+| FR-RE-001 to FR-RE-007 | Catalog Review and Edit Module | UI Screens (Section 8.2) | Mobile/Web App |
+| FR-CP-001 to FR-CP-004 | Catalog Publishing Module | 7.1 REST API Endpoints | Lambda: UpdateCatalog |
+| FR-UM-001 to FR-UM-006 | User Management Module | 9.1 Authentication Flow | Cognito |
+| FR-JM-001 to FR-JM-005 | Job Management Module | 5.2 State Transitions, 7.1 | DynamoDB, Step Functions |
+
+---
+
+**Document Version:** 1.1  
 **Author:** Team MotherBoard  
 **Last Updated:** February 2026
