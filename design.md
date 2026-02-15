@@ -1220,24 +1220,24 @@ def invoke_bedrock_with_retry(model_id, body):
 ## 12. References
 
 ### AWS Documentation
-- Step Functions: docs.aws.amazon.com/step-functions/latest/dg/welcome.html
-- Bedrock: docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html
-- MediaConvert: docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html
-- OpenSearch Serverless: docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless.html
-- DynamoDB: docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html
+- Step Functions: [docs.aws.amazon.com/step-functions/latest/dg/welcome.html](https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html)
+- Bedrock: [docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html](https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html)
+- MediaConvert: [docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html](https://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html)
+- OpenSearch Serverless: [docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless.html](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless.html)
+- DynamoDB: [docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html)
 
 ### Algorithm References
-- Blur Detection: pyimagesearch.com/2015/09/07/blur-detection-with-opencv
-- SSIM: scikit-image.org/docs/stable/api/skimage.metrics.html
-- HNSW: arxiv.org/abs/1603.09320
+- Blur Detection: [pyimagesearch.com/2015/09/07/blur-detection-with-opencv](https://pyimagesearch.com/2015/09/07/blur-detection-with-opencv)
+- SSIM: [scikit-image.org/docs/stable/api/skimage.metrics.html](https://scikit-image.org/docs/stable/api/skimage.metrics.html)
+- HNSW: [arxiv.org/abs/1603.09320](https://arxiv.org/abs/1603.09320)
 
 ### Protocol References
-- ONDC Protocol: github.com/ONDC-Official/ONDC-Protocol-Specs
-- Beckn Protocol: developers.becknprotocol.io/docs/introduction/beckn-protocol-specification
+- ONDC Protocol: [github.com/ONDC-Official/ONDC-Protocol-Specs](https://github.com/ONDC-Official/ONDC-Protocol-Specs)
+- Beckn Protocol: [developers.becknprotocol.io/docs/introduction/beckn-protocol-specification](https://developers.becknprotocol.io/docs/introduction/beckn-protocol-specification)
 
 ### AWS Sample Repositories
-- Titan Multimodal Search: github.com/aws-samples/amazon-bedrock-titan-multimodal-search
-- Step Functions + Bedrock: github.com/aws-samples/step-functions-workflows-collection
+- Titan Multimodal Search: [github.com/aws-samples/amazon-bedrock-titan-multimodal-search](https://github.com/aws-samples/amazon-bedrock-titan-multimodal-search)
+- Step Functions + Bedrock: [github.com/aws-samples/step-functions-workflows-collection](https://github.com/aws-samples/step-functions-workflows-collection)
 
 ---
 
