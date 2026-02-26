@@ -17,8 +17,10 @@ RAW_FRAMES_DIR = r"C:\Users\mansi.valiramani\Desktop\test\ai4bharat\output\raw_f
 LOG_FILE = r"C:\Users\mansi.valiramani\Desktop\test\ai4bharat\output\frame_pipeline_log4.txt"
 
 JPEG_QUALITY = 2
-BLUR_THRESHOLD = 200.0
-SSIM_THRESHOLD = 0.60
+# blur_detector mean-map score range is roughly 0.0 to 1.0 for this pipeline.
+BLUR_THRESHOLD = 0.11 #for blur_detector
+# BLUR_THRESHOLD = 150.0 # for Laplacian variance
+SSIM_THRESHOLD = 0.80
 MAX_FRAMES = None
 
 
@@ -56,8 +58,9 @@ def main() -> None:
     print("source_fps:", extraction.source_fps)
     print("extracted_count:", len(extraction.frame_paths))
     print("filtered_count:", len(filtered))
-    print("filtered_paths:")
-    for path in filtered:
+    filtered_sorted = sorted(filtered, key=lambda path: Path(path).name)
+    print("filtered_paths_sorted:")
+    for path in filtered_sorted:
         print(path)
     print("log_file:", log_path)
 
