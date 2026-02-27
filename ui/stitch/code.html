@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KiranaStudio - Digital Catalog</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#137fec",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101922",
+              "surface-dark": "#1a2632",
+              "surface-light": "#ffffff",
+              "text-main": "#e2e8f0",
+              "text-muted": "#94a3b8",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"],
+              "body": ["Manrope", "sans-serif"],
+            },
+            borderRadius: {
+              "DEFAULT": "0.25rem", 
+              "lg": "0.5rem", 
+              "xl": "0.75rem", 
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24
+        }
+        /* Custom scrollbar for dark mode feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #101922; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #233648; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334b63; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col overflow-hidden">
+<!-- Main Layout Container -->
+<div class="flex h-screen w-full">
+<!-- Sidebar Navigation -->
+<aside class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-[#233648] bg-surface-light dark:bg-[#111a22] flex flex-col">
+<!-- Logo Area -->
+<div class="h-16 flex items-center px-6 border-b border-slate-200 dark:border-[#233648]">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[20px]">smart_toy</span>
+</div>
+<h2 class="text-lg font-bold tracking-tight">KiranaStudio</h2>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 dark:text-[#92adc9] hover:bg-slate-100 dark:hover:bg-[#1c2a38] transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary dark:text-white dark:bg-[#233648]" href="#">
+<span class="material-symbols-outlined fill-1">shopping_bag</span>
+<span class="text-sm font-medium">Catalog Manager</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 dark:text-[#92adc9] hover:bg-slate-100 dark:hover:bg-[#1c2a38] transition-colors" href="#">
+<span class="material-symbols-outlined">video_library</span>
+<span class="text-sm font-medium">Video Uploads</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 dark:text-[#92adc9] hover:bg-slate-100 dark:hover:bg-[#1c2a38] transition-colors" href="#">
+<span class="material-symbols-outlined">dns</span>
+<span class="text-sm font-medium">ONDC Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 dark:text-[#92adc9] hover:bg-slate-100 dark:hover:bg-[#1c2a38] transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-sm font-medium">Analytics</span>
+</a>
+</nav>
+<!-- User Profile Snippet -->
+<div class="p-4 border-t border-slate-200 dark:border-[#233648]">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-cover bg-center" data-alt="User profile picture" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAnVraErKFoISu4KEadMfgcxhrV56_wWGiC4oC4AgFlzYN18F4K2jruaJxhq5e32TDzn49Xzs03vrM9-YGaQfZFPCoqOOfUgsuqDea7Hzx1YPozmJTq1vZlYxUGvdxwrSmflUQPcdO6n5BW4d_luWOUx-LXu48fTIOwl-vpqznP6ezP7W857OeGNbyQ7EMqsIawOgzxl5F88dBMYvP0F73pwjmmHxtVGAqzIID1w1GodT4u8_9OryOScFyQlrhqSHC4Qjvyy0tpGQGH');"></div>
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Store Manager</span>
+<span class="text-xs text-slate-500 dark:text-[#92adc9]">Retail AI Pro</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-w-0 bg-background-light dark:bg-background-dark overflow-hidden">
+<!-- Top Header -->
+<header class="h-16 flex items-center justify-between px-6 border-b border-slate-200 dark:border-[#233648] bg-surface-light dark:bg-[#111a22]">
+<!-- Breadcrumbs & Search -->
+<div class="flex items-center gap-6 flex-1">
+<div class="flex items-center text-sm text-slate-500 dark:text-[#92adc9]">
+<span class="hover:text-primary cursor-pointer">Projects</span>
+<span class="mx-2">/</span>
+<span class="hover:text-primary cursor-pointer">Shelf Analysis #104</span>
+<span class="mx-2">/</span>
+<span class="text-slate-900 dark:text-white font-medium">Catalog Preview</span>
+</div>
+<div class="relative max-w-md w-full hidden md:block group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2 border-none rounded-lg leading-5 bg-slate-100 dark:bg-[#233648] text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-[#92adc9] focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm transition-shadow" placeholder="Search products by name, SKU or tag..." type="text"/>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-3">
+<div class="hidden sm:flex items-center px-3 py-1.5 rounded bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 text-xs font-medium">
+<span class="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
+                        Processing Complete
+                    </div>
+<button class="flex items-center justify-center h-9 px-4 rounded-lg bg-surface-light dark:bg-[#233648] border border-slate-200 dark:border-[#344a61] text-sm font-medium hover:bg-slate-50 dark:hover:bg-[#2d4256] transition-colors">
+<span class="material-symbols-outlined text-[18px] mr-2">settings</span>
+                        Settings
+                    </button>
+<button class="flex items-center justify-center h-9 px-4 rounded-lg bg-primary hover:bg-blue-600 text-white text-sm font-bold shadow-sm transition-colors">
+<span class="material-symbols-outlined text-[18px] mr-2">ios_share</span>
+                        Export ONDC Catalog
+                    </button>
+</div>
+</header>
+<!-- Content Grid with Sidebar Filters -->
+<div class="flex flex-1 overflow-hidden">
+<!-- Filters Sidebar -->
+<aside class="w-64 bg-surface-light dark:bg-[#111a22]/50 border-r border-slate-200 dark:border-[#233648] overflow-y-auto hidden lg:block p-4">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-[#92adc9]">Filters</h3>
+<button class="text-xs text-primary hover:text-blue-400">Reset All</button>
+</div>
+<!-- Filter Group: Confidence -->
+<div class="mb-6">
+<h4 class="text-sm font-semibold mb-3">AI Confidence Score</h4>
+<div class="space-y-2">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input checked="" class="rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary bg-transparent" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors">High (&gt;90%)</span>
+<span class="ml-auto text-xs text-slate-400">124</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary bg-transparent" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors">Medium (70-90%)</span>
+<span class="ml-auto text-xs text-slate-400">12</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary bg-transparent" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors">Low (&lt;70%)</span>
+<span class="ml-auto text-xs text-slate-400">3</span>
+</label>
+</div>
+</div>
+<!-- Filter Group: Category -->
+<div class="mb-6">
+<h4 class="text-sm font-semibold mb-3">Category</h4>
+<div class="space-y-2">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input checked="" class="rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary bg-transparent" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors">Pantry Staples</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary bg-transparent" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors">Snacks &amp; Beverages</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary bg-transparent" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors">Personal Care</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary bg-transparent" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors">Cleaning Supplies</span>
+</label>
+</div>
+</div>
+</aside>
+<!-- Product Grid Area -->
+<div class="flex-1 overflow-y-auto p-6 relative">
+<!-- Stats / Toolbar -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+<div>
+<h1 class="text-2xl font-bold mb-1">Detected Items</h1>
+<p class="text-sm text-slate-500 dark:text-[#92adc9]">139 products identified from shelf video <span class="font-mono text-primary bg-primary/10 px-1 rounded">VID_20231024_001.mp4</span></p>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg bg-surface-light dark:bg-[#233648] hover:bg-slate-100 dark:hover:bg-[#344a61] text-slate-500 dark:text-slate-300 border border-slate-200 dark:border-transparent">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+<button class="p-2 rounded-lg bg-transparent hover:bg-slate-100 dark:hover:bg-[#233648] text-slate-400">
+<span class="material-symbols-outlined">view_list</span>
+</button>
+</div>
+</div>
+<!-- Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 pb-20">
+<!-- Product Card 1 -->
+<div class="group bg-surface-light dark:bg-[#1a2632] rounded-xl border border-slate-200 dark:border-[#233648] hover:border-primary/50 dark:hover:border-primary/50 transition-all duration-200 overflow-hidden flex flex-col relative">
+<!-- Badge -->
+<div class="absolute top-3 right-3 z-10">
+<div class="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">verified</span>
+                                    ONDC READY
+                                </div>
+</div>
+<!-- Image -->
+<div class="aspect-square w-full bg-slate-100 dark:bg-[#111a22] relative overflow-hidden">
+<div class="w-full h-full bg-contain bg-no-repeat bg-center transform group-hover:scale-105 transition-transform duration-300" data-alt="Bag of potato chips on white background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDyM_5vynedTmAtEvzQL71KFA1fNbXvMuvhqq2Jphl66tymrX1AKq8Bum0nBlNYfBHMuxs21VlajbmakPkm4FYx9utMKCQMHn8VvL1X8BIV_ykv1X4AnnSD-QWvKngJSdnHcmZA5ZSMD1T0T61MsVcS1tCSX82Yz_zJqZAUygWqOoRQNyb11uCTzbgh9V5dWZPlxN0VW28qm2ea4nxWvIbDdkB69dYSboIlNTmBb3sI38o3xbVjQiFRVWflGOPrt3298CuascENaLtG');"></div>
+<div class="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">auto_awesome</span>
+                                    Enhanced
+                                </div>
+</div>
+<!-- Content -->
+<div class="p-4 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-semibold text-primary uppercase tracking-wide">Snacks</span>
+<span class="text-xs text-slate-400">98% Match</span>
+</div>
+<h3 class="font-bold text-base mb-1 line-clamp-2" title="Lays Classic Salted Potato Chips - 52g">Lays Classic Salted Potato Chips - 52g</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-4">SKU: LAYS-CS-52</p>
+<div class="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-[#233648] pt-3">
+<span class="text-lg font-bold">₹20.00</span>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit_square</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="group bg-surface-light dark:bg-[#1a2632] rounded-xl border border-slate-200 dark:border-[#233648] hover:border-primary/50 dark:hover:border-primary/50 transition-all duration-200 overflow-hidden flex flex-col relative">
+<!-- Badge -->
+<div class="absolute top-3 right-3 z-10">
+<div class="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">verified</span>
+                                    ONDC READY
+                                </div>
+</div>
+<!-- Image -->
+<div class="aspect-square w-full bg-slate-100 dark:bg-[#111a22] relative overflow-hidden">
+<div class="w-full h-full bg-contain bg-no-repeat bg-center transform group-hover:scale-105 transition-transform duration-300" data-alt="Bottle of sparkling lemon soda" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCSazCKCMKVRQFU4dCKtx79yTTqfqsB1f-VHKVW_CBF4HU4EFjFG5rucnJaynABcALnu2JjE74p3WaIYhM9quZWkiu5UkCDuMoAgjSRQuSMxFFXxPw4CqPYN7B8h2pCb6M10N8uEB8B6L-t6khq_lilSYNOHah5tjuXuPCp6jNfqDa2F2FVye0J-cC68I4Ox0eBjBjATqltFRaza0AnLf0ifeMSSGtEZbSh8J76Luu7J_E6c1weWnQJZ6Z5ehdc4boPWQt-femayzmh');"></div>
+</div>
+<!-- Content -->
+<div class="p-4 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-semibold text-primary uppercase tracking-wide">Beverages</span>
+<span class="text-xs text-slate-400">96% Match</span>
+</div>
+<h3 class="font-bold text-base mb-1 line-clamp-2">Kinley Soda Water - 750ml</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-4">SKU: KIN-SW-750</p>
+<div class="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-[#233648] pt-3">
+<span class="text-lg font-bold">₹40.00</span>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit_square</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="group bg-surface-light dark:bg-[#1a2632] rounded-xl border border-slate-200 dark:border-[#233648] hover:border-primary/50 dark:hover:border-primary/50 transition-all duration-200 overflow-hidden flex flex-col relative">
+<!-- Badge -->
+<div class="absolute top-3 right-3 z-10">
+<div class="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">verified</span>
+                                    ONDC READY
+                                </div>
+</div>
+<!-- Image -->
+<div class="aspect-square w-full bg-slate-100 dark:bg-[#111a22] relative overflow-hidden">
+<div class="w-full h-full bg-contain bg-no-repeat bg-center transform group-hover:scale-105 transition-transform duration-300" data-alt="Pack of white flour (Maida)" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBdV4jiiGkLXdOusJxXfDmh3ETXSnElFqqZY60uEm7E86ET0aQuZH5t8-AWqFkn1d5yYoaZ14SO95vbLRQG73cZwSc2vyP7Krejn5ubj591OjrAnHKS3Lz9W1EpU98m8bshca_pvx-2gzlN6_QT6QkcUUVrGRluu0FguyNQEFmQ1YRSgwsUDH2iJJxOoyJOl3Hihi6sosURxJ7D2W90N8-G8Oaewf26jnT0PpAFHdc97yD0ZbMe60JO_Uj_FgAwSET5S2BLCvud_sa_');"></div>
+<div class="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">auto_awesome</span>
+                                    Enhanced
+                                </div>
+</div>
+<!-- Content -->
+<div class="p-4 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-semibold text-primary uppercase tracking-wide">Staples</span>
+<span class="text-xs text-slate-400">92% Match</span>
+</div>
+<h3 class="font-bold text-base mb-1 line-clamp-2">Rajdhani Maida - 1kg</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-4">SKU: RAJ-MA-1KG</p>
+<div class="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-[#233648] pt-3">
+<span class="text-lg font-bold">₹55.00</span>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit_square</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 4 (Low Confidence Warning) -->
+<div class="group bg-surface-light dark:bg-[#1a2632] rounded-xl border border-yellow-500/50 dark:border-yellow-500/30 hover:border-yellow-500 transition-all duration-200 overflow-hidden flex flex-col relative ring-1 ring-yellow-500/10">
+<!-- Badge -->
+<div class="absolute top-3 right-3 z-10">
+<div class="bg-yellow-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">warning</span>
+                                    REVIEW
+                                </div>
+</div>
+<!-- Image -->
+<div class="aspect-square w-full bg-slate-100 dark:bg-[#111a22] relative overflow-hidden">
+<div class="w-full h-full bg-contain bg-no-repeat bg-center transform group-hover:scale-105 transition-transform duration-300 opacity-80" data-alt="Pack of dark chocolate cookies" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDh1m0MwBwzyffBdwCNaa8VBXOcRf1hUB4zzx2yDeaiHeA3NKOULoiutv6jTPtJJP6f1_P8cIAPX36rE4MgoHEvGuAi335A1SkVekL3wLnQHcrobhq-CnlIzPgiX27j-ZhPgP0iywxEwu8PYTE9fKukbSZEcjX7-OVy2z_b53AWFqFhKOGSm49nPgVZKEaumQl3oNHV7gk91vDo4p6-0NN5YGqy-q420qez8NpPXJbuGgQ4648qSczMqdynVREKwGyKjPYScOM_lNS1');"></div>
+</div>
+<!-- Content -->
+<div class="p-4 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-semibold text-yellow-500 uppercase tracking-wide">Biscuits</span>
+<span class="text-xs text-yellow-500 font-bold">64% Match</span>
+</div>
+<h3 class="font-bold text-base mb-1 line-clamp-2">Dark Fantasy Choco Fills - 300g</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-4">SKU: UNKNOWN-04</p>
+<div class="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-[#233648] pt-3">
+<span class="text-lg font-bold text-slate-400">₹--.--</span>
+<button class="text-yellow-500 hover:text-yellow-400 transition-colors flex items-center gap-1 text-sm font-medium">
+                                        Fix Info
+                                    </button>
+</div>
+</div>
+</div>
+<!-- Product Card 5 -->
+<div class="group bg-surface-light dark:bg-[#1a2632] rounded-xl border border-slate-200 dark:border-[#233648] hover:border-primary/50 dark:hover:border-primary/50 transition-all duration-200 overflow-hidden flex flex-col relative">
+<div class="absolute top-3 right-3 z-10">
+<div class="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">verified</span>
+                                    ONDC READY
+                                </div>
+</div>
+<div class="aspect-square w-full bg-slate-100 dark:bg-[#111a22] relative overflow-hidden">
+<div class="w-full h-full bg-contain bg-no-repeat bg-center transform group-hover:scale-105 transition-transform duration-300" data-alt="Cereal box corn flakes" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuACxx8wGs4sYn1TFapSF3KnFYtb7Ig4Gi9ONlg5dTylHG6d5mrLuwBGFSh04oV2FkQD2iaOMm7SrN4_IgYb4gZ905gp2kKc2cMZptH_ENJyUwHYIO_AVFYN3HdIBbXbl1gQocmbeJu2Qpu1MQEsKEdW1BvJrjgBOgpLfYd_37Jybsf0PCpnatCvDvH13bftbD0kmXa-HWAMM6BT_dKttuZjxZ8GQM_mwOXwkK03VYLA_LdOmRapiPPPy62uhcN34o9CBDH3Qhy7WCXY');"></div>
+<div class="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">auto_awesome</span>
+                                    Enhanced
+                                </div>
+</div>
+<div class="p-4 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-semibold text-primary uppercase tracking-wide">Breakfast</span>
+<span class="text-xs text-slate-400">95% Match</span>
+</div>
+<h3 class="font-bold text-base mb-1 line-clamp-2">Kellogg's Corn Flakes - 475g</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-4">SKU: KEL-CF-475</p>
+<div class="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-[#233648] pt-3">
+<span class="text-lg font-bold">₹190.00</span>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit_square</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 6 -->
+<div class="group bg-surface-light dark:bg-[#1a2632] rounded-xl border border-slate-200 dark:border-[#233648] hover:border-primary/50 dark:hover:border-primary/50 transition-all duration-200 overflow-hidden flex flex-col relative">
+<div class="absolute top-3 right-3 z-10">
+<div class="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">verified</span>
+                                    ONDC READY
+                                </div>
+</div>
+<div class="aspect-square w-full bg-slate-100 dark:bg-[#111a22] relative overflow-hidden">
+<div class="w-full h-full bg-contain bg-no-repeat bg-center transform group-hover:scale-105 transition-transform duration-300" data-alt="Tea packet green packaging" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAjwaA1MILGrA-LLlrZwh_GKuf0oaviHBJRJVFBg4762XA1HWAE2-DVcNQrKtz3_ztxBUTLnQx8Rrk30csEC1mCP72_lKDClVFFM52VhH5wJ6cNvGrClH2jWLp-p5qXl4f40NjrQ9hy19VZreDS3FOTSdMK7GnLlFIyNUe8RMfA2nyMo0cqyyENJPZVegOqzfQA72iviiWeDl-3kbeOqPiij9p1r-AflKEqX9py_twNbZZSJcvmf0KSjMii4U1oyP2zJ0Gv1IX892lX');"></div>
+</div>
+<div class="p-4 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-semibold text-primary uppercase tracking-wide">Beverages</span>
+<span class="text-xs text-slate-400">91% Match</span>
+</div>
+<h3 class="font-bold text-base mb-1 line-clamp-2">Tata Tea Gold - 500g</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-4">SKU: TATA-TG-500</p>
+<div class="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-[#233648] pt-3">
+<span class="text-lg font-bold">₹240.00</span>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit_square</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 7 -->
+<div class="group bg-surface-light dark:bg-[#1a2632] rounded-xl border border-slate-200 dark:border-[#233648] hover:border-primary/50 dark:hover:border-primary/50 transition-all duration-200 overflow-hidden flex flex-col relative">
+<div class="absolute top-3 right-3 z-10">
+<div class="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">verified</span>
+                                    ONDC READY
+                                </div>
+</div>
+<div class="aspect-square w-full bg-slate-100 dark:bg-[#111a22] relative overflow-hidden">
+<div class="w-full h-full bg-contain bg-no-repeat bg-center transform group-hover:scale-105 transition-transform duration-300" data-alt="Dishwashing liquid yellow bottle" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDVa6i0hHXyKxch_E7vKjZAWISqx4V35k50VxssmJX4edKtZ6UxLMKSf5A_VkmlmiG5yM1fuK-aBFtHx6y8-oTWrS2rlDWq98vpOV13K5ZUmPXQ0_sIH0hpHX-5RxuFo8I6xQXy63DgY3Kae4cK7ma7cdu6XOStGNBUdrIk2cDaHNWaYSUiKi5GjtdgP17Spm7OG4La7ahm0UVc4CxolnbQFcwhEkKuPTXuxApiddUAmf0kS1Nw4dHPBggjQlUVD5b-r7HlirsTs2GX');"></div>
+<div class="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">auto_awesome</span>
+                                    Enhanced
+                                </div>
+</div>
+<div class="p-4 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-semibold text-primary uppercase tracking-wide">Cleaning</span>
+<span class="text-xs text-slate-400">97% Match</span>
+</div>
+<h3 class="font-bold text-base mb-1 line-clamp-2">Vim Gel Lemon - 750ml</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-4">SKU: VIM-GL-750</p>
+<div class="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-[#233648] pt-3">
+<span class="text-lg font-bold">₹105.00</span>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit_square</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 8 -->
+<div class="group bg-surface-light dark:bg-[#1a2632] rounded-xl border border-slate-200 dark:border-[#233648] hover:border-primary/50 dark:hover:border-primary/50 transition-all duration-200 overflow-hidden flex flex-col relative">
+<div class="absolute top-3 right-3 z-10">
+<div class="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">verified</span>
+                                    ONDC READY
+                                </div>
+</div>
+<div class="aspect-square w-full bg-slate-100 dark:bg-[#111a22] relative overflow-hidden">
+<div class="w-full h-full bg-contain bg-no-repeat bg-center transform group-hover:scale-105 transition-transform duration-300" data-alt="Instant coffee jar glass" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC3-gqu0sGMeIQqsf9J17prpmc-KrqfpEtpgrG62OjYigHnI9-qNF8ehY0x-z9-Xo0mTQmtOTlpPf1ZJPutS-Pl3yPUpbcHNh0Cw11mMJz0V7x7sILYlX03qJ9KQFmG3TlHUC791HDIAmAq44xQj6aIL8KTqG3Hhg4MOCrb3m3As1HpYXQcq2CjQtNyjLprA7eDedgOOtD7pm5AJF5v1QrUklS4WGa1vhTiF5GEiJotbawAYh5y6p5VuAH-3pOGC5irEeGmmTMYSUNB');"></div>
+</div>
+<div class="p-4 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-semibold text-primary uppercase tracking-wide">Beverages</span>
+<span class="text-xs text-slate-400">93% Match</span>
+</div>
+<h3 class="font-bold text-base mb-1 line-clamp-2">Nescafe Classic Coffee - 50g</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-4">SKU: NES-CC-50</p>
+<div class="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-[#233648] pt-3">
+<span class="text-lg font-bold">₹150.00</span>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit_square</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Action Button for Mobile/Smaller Screens (Optional but nice) -->
+<div class="fixed bottom-6 right-6 lg:hidden">
+<button class="w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-600 transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
