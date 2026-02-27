@@ -16,6 +16,14 @@ class PresignedUrlResponse(BaseModel):
     expires_in: int
 
 
+class UseSampleResponse(BaseModel):
+    """Response for use-sample: use a video from sample_video without upload."""
+
+    video_id: str
+    job_id: str
+    message: str = "No upload needed. Call POST /jobs/{video_id}/process to run the pipeline."
+
+
 class ProcessJobResponse(BaseModel):
     job_id: str
     status: str

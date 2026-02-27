@@ -4,7 +4,7 @@ import logging
 import warnings
 from pathlib import Path
 
-import blur_detector
+# import blur_detector
 import cv2
 import numpy as np
 from skimage.metrics import structural_similarity
@@ -28,16 +28,16 @@ def _read_gray_frame(frame_path: str) -> cv2.typing.MatLike:
     return image
 
 
-def _blur_score_lib(gray_image: cv2.typing.MatLike) -> float:
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", message=r".*`square` is deprecated.*", category=FutureWarning)
-        warnings.filterwarnings(
-            "ignore",
-            message=r".*Possible precision loss converting image of type float64 to uint8.*",
-            category=UserWarning,
-        )
-        blur_map = blur_detector.detectBlur(gray_image, **_BLUR_DETECTOR_CONFIG)
-    return float(np.mean(blur_map))
+# def _blur_score_lib(gray_image: cv2.typing.MatLike) -> float:
+#     with warnings.catch_warnings():
+#         warnings.filterwarnings("ignore", message=r".*`square` is deprecated.*", category=FutureWarning)
+#         warnings.filterwarnings(
+#             "ignore",
+#             message=r".*Possible precision loss converting image of type float64 to uint8.*",
+#             category=UserWarning,
+#         )
+#         blur_map = blur_detector.detectBlur(gray_image, **_BLUR_DETECTOR_CONFIG)
+#     return float(np.mean(blur_map))
 
 def _blur_score(gray_image: cv2.typing.MatLike) -> float:
     return float(cv2.Laplacian(gray_image, cv2.CV_64F).var())
@@ -45,7 +45,7 @@ def _blur_score(gray_image: cv2.typing.MatLike) -> float:
 
 def filter_frames(
     frame_keys: list[str],
-    blur_threshold: float = 0.11,
+    blur_threshold: float = 100.0,
     ssim_threshold: float = 0.95,
     max_frames: int | None = None,
 ) -> list[str]:
@@ -65,7 +65,7 @@ def filter_frames(
     sharp_candidates: list[dict] = []
     for frame_index, frame_path in enumerate(frame_keys, start=1):
         gray = _read_gray_frame(frame_path)
-        score = _blur_score_lib(gray)
+        score = _blur_score(gray)
         if score >= blur_threshold:
             logger.info(
                 "Frame %s/%s passed blur check path=%s blur_score=%.2f",

@@ -7,6 +7,8 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
+from app.config.settings import get_settings
+
 logger = logging.getLogger(__name__)
 
 
@@ -136,5 +138,20 @@ def extract_frames_from_video(
 
 
 def extract_frames(video_id: str) -> list[str]:
-    # Placeholder output for scaffold.
-    return [f"frames/{video_id}/frame_0001.jpg", f"frames/{video_id}/frame_0002.jpg"]
+    """
+    Local-dev implementation:
+    - reads video from settings.resolved_local_videos_dir/{video_id}.mp4
+    - writes frames to settings.local_raw_frames_dir/{video_id}/
+    - returns list of frame file paths
+    """
+    settings = get_settings()
+
+    video_path = Path(settings.resolved_local_videos_dir) / f"{video_id}.mp4"
+    output_dir = Path(settings.local_raw_frames_dir) / video_id
+
+    return extract_frames_from_video(
+        video_path=str(video_path),
+        output_dir=str(output_dir),
+        jpeg_quality=settings.frame_jpeg_quality,
+        clean_output_dir=True,
+    )
