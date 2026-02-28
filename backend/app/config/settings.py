@@ -52,6 +52,8 @@ class Settings(BaseSettings):
     # ---------- Feature flags ----------
     use_aws_storage: bool = False
     use_aws_db: bool = False
+    auto_use_aws_db: bool = True
+    auto_use_aws_storage: bool = True
 
     frame_jpeg_quality: int = 2
     frame_blur_threshold: float = 150.0

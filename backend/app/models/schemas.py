@@ -41,9 +41,12 @@ class JobStatusResponse(BaseModel):
 
 
 class CatalogProduct(BaseModel):
+    model_config = {"extra": "allow"}
+
     product_id: str
-    brand: str
+    brand: str | None = None
     product_name: str
+
     net_weight: str | None = None
     variant: str | None = None
     price: float | None = None

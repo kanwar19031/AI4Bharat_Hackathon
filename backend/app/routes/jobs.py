@@ -6,14 +6,14 @@ from app.config.settings import get_settings
 from app.dependencies import get_jobs_repo, get_pipeline_orchestrator
 from app.models.schemas import JobStatusResponse, ProcessJobResponse, UseSampleResponse
 from app.pipeline.orchestrator import PipelineOrchestrator
-from app.repo.jobs_repo import JobsRepository
+from app.repo.interfaces import JobsRepo
 
 router = APIRouter(prefix="/jobs", tags=["jobs"])
 
 
 @router.post("/use-sample", response_model=UseSampleResponse)
 def use_sample_video(
-    jobs_repo: JobsRepository = Depends(get_jobs_repo),
+    jobs_repo: JobsRepo = Depends(get_jobs_repo),
 ) -> UseSampleResponse:
     """
     Create a job that uses the sample video from sample_video/ (no upload).
@@ -41,7 +41,7 @@ def use_sample_video(
 def process_job(
     video_id: str,
     background_tasks: BackgroundTasks,
-    jobs_repo: JobsRepository = Depends(get_jobs_repo),
+    jobs_repo: JobsRepo = Depends(get_jobs_repo),
     orchestrator: PipelineOrchestrator = Depends(get_pipeline_orchestrator),
 ) -> ProcessJobResponse:
     job = jobs_repo.get_by_video_id(video_id)
@@ -76,7 +76,7 @@ def process_job(
 @router.get("/{video_id}/status", response_model=JobStatusResponse)
 def get_job_status(
     video_id: str,
-    jobs_repo: JobsRepository = Depends(get_jobs_repo),
+    jobs_repo: JobsRepo = Depends(get_jobs_repo),
 ) -> JobStatusResponse:
     job = jobs_repo.get_by_video_id(video_id)
     if not job:
