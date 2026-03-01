@@ -57,7 +57,8 @@ class Settings(BaseSettings):
 
     frame_jpeg_quality: int = 2
     frame_blur_threshold: float = 150.0
-    frame_ssim_threshold: float = 0.80
+    frame_scene_threshold: float = 0.3
+    frame_min_interval: float = 1.5
     frame_max_frames: int = 5
 
     def _resolve_local_path(self, path_str: str) -> str:

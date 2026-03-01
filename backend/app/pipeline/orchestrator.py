@@ -34,7 +34,6 @@ class PipelineOrchestrator:
             filtered_frames = filter_frames(
                 frames,
                 blur_threshold=settings.frame_blur_threshold,
-                ssim_threshold=settings.frame_ssim_threshold,
                 max_frames=settings.frame_max_frames,
             )
 

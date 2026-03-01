@@ -25,7 +25,6 @@ LOG_FILE = Path(settings.resolved_local_logs_dir) / "frame_pipeline.txt"
 
 JPEG_QUALITY = settings.frame_jpeg_quality
 BLUR_THRESHOLD = settings.frame_blur_threshold
-SSIM_THRESHOLD = settings.frame_ssim_threshold
 MAX_FRAMES = None
 
 
@@ -50,13 +49,14 @@ def main() -> None:
         video_path=str(VIDEO_PATH),
         output_dir=str(RAW_FRAMES_DIR),
         jpeg_quality=JPEG_QUALITY,
+        scene_threshold=settings.frame_scene_threshold,
+        min_interval=settings.frame_min_interval,
         clean_output_dir=True,
     )
 
     filtered = filter_frames(
         extraction.frame_paths,
         blur_threshold=BLUR_THRESHOLD,
-        ssim_threshold=SSIM_THRESHOLD,
         max_frames=MAX_FRAMES,
     )
 
