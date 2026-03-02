@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import shutil
 import sys
 from pathlib import Path
 
@@ -12,13 +13,15 @@ from app.pipeline.frame_extractor import extract_frames_with_ffmpeg
 from app.pipeline.frame_filter import filter_frames
 
 # Set this before running.
-VIDEO_PATH = r"C:\Users\mansi.valiramani\Desktop\test\ai4bharat\sample_video\chips.mp4"
-RAW_FRAMES_DIR = r"C:\Users\mansi.valiramani\Desktop\test\ai4bharat\output\raw_frames"
-LOG_FILE = r"C:\Users\mansi.valiramani\Desktop\test\ai4bharat\output\frame_pipeline_log4.txt"
+output_dir = "output5"
+VIDEO_PATH = r"sample_video/chips.mp4"
+RAW_FRAMES_DIR = f"{output_dir}/raw_frames"
+FILTERED_FRAMES_DIR = f"{output_dir}/filtered_frames"
+LOG_FILE = f"{output_dir}/frame_pipeline_log4.txt"
 
 JPEG_QUALITY = 2
-BLUR_THRESHOLD = 200.0
-SSIM_THRESHOLD = 0.60
+BLUR_THRESHOLD = 175.0
+SSIM_THRESHOLD = 0.80
 MAX_FRAMES = None
 
 
@@ -53,12 +56,20 @@ def main() -> None:
         max_frames=MAX_FRAMES,
     )
 
+    # Copy final frames into a single folder for easy review
+    filtered_dir = Path(FILTERED_FRAMES_DIR)
+    filtered_dir.mkdir(parents=True, exist_ok=True)
+    for i, src_path in enumerate(filtered, start=1):
+        dst_name = f"frame_{i:06d}.jpg"
+        shutil.copy2(src_path, filtered_dir / dst_name)
+
     print("source_fps:", extraction.source_fps)
     print("extracted_count:", len(extraction.frame_paths))
     print("filtered_count:", len(filtered))
     print("filtered_paths:")
     for path in filtered:
         print(path)
+    print("filtered_frames_dir:", filtered_dir.resolve())
     print("log_file:", log_path)
 
 
