@@ -14,6 +14,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from app.config.settings import get_settings
+from app.pipeline.frame_deduplicator import FrameDeduplicator
 from app.pipeline.frame_extractor import extract_frames_with_ffmpeg
 from app.pipeline.frame_filter import filter_frames
 
@@ -60,14 +61,26 @@ def main() -> None:
         max_frames=MAX_FRAMES,
     )
 
-    print("source_fps:", extraction.source_fps)
-    print("extracted_count:", len(extraction.frame_paths))
-    print("filtered_count:", len(filtered))
-    filtered_sorted = sorted(filtered, key=lambda path: Path(path).name)
-    print("filtered_paths_sorted:")
-    for path in filtered_sorted:
-        print(path)
-    print("log_file:", log_path)
+    deduplicator = FrameDeduplicator(
+        hash_size=settings.frame_hash_size,
+        hamming_threshold=settings.frame_hamming_threshold,
+    )
+    unique_frames = deduplicator.deduplicate(filtered)
+
+    print("\n" + "=" * 60)
+    print("FRAME PIPELINE RESULTS")
+    print("=" * 60)
+    print(f"source_fps:        {extraction.source_fps}")
+    print(f"extracted_count:   {len(extraction.frame_paths)}")
+    print(f"after_blur_filter: {len(filtered)}")
+    print(f"after_dedup:       {len(unique_frames)}")
+    print(f"frames_removed:    {len(filtered) - len(unique_frames)}")
+    print("-" * 60)
+    print("final frames:")
+    for path in sorted(unique_frames, key=lambda p: Path(p).name):
+        print(f"  {path}")
+    print(f"log_file: {log_path}")
+    print("=" * 60)
 
 
 if __name__ == "__main__":

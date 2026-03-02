@@ -27,15 +27,21 @@ class Settings(BaseSettings):
 
     bedrock_claude_model_id: str = "anthropic.claude-3-5-haiku-20241022-v1:0"
     bedrock_titan_image_model_id: str = "amazon.titan-image-generator-v2:0"
+    bedrock_nova_canvas_model_id: str = "amazon.nova-canvas-v1:0"
 
     claude_max_tokens: int = 1200
     claude_temperature: float = 0.1
 
+    # ---------- Titan Image v2 (legacy) ----------
     titan_cfg_scale: float = 8.0
     titan_width: int = 1024
     titan_height: int = 1024
     titan_quality: str = "standard"
     titan_outpaint_mode: str = "PRECISE"
+
+    # ---------- Nova Canvas (recommended — 50% cheaper) ----------
+    nova_canvas_quality: str = "standard"       # "standard" ($0.04) or "premium" ($0.06)
+    nova_canvas_cfg_scale: float = 6.5           # 1.1-10; 6.5 is balanced default
 
     presigned_url_expiry_seconds: int = 300
     cors_origins: str = "*"
@@ -58,8 +64,10 @@ class Settings(BaseSettings):
     frame_jpeg_quality: int = 2
     frame_blur_threshold: float = 150.0
     frame_scene_threshold: float = 0.3
-    frame_min_interval: float = 1.5
+    frame_min_interval: float = 1
     frame_max_frames: int = 5
+    frame_hash_size: int = 16
+    frame_hamming_threshold: int = 10
 
     def _resolve_local_path(self, path_str: str) -> str:
         """Resolve a relative path against project root so it works from any CWD."""

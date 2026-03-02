@@ -1,5 +1,6 @@
 from app.config.settings import get_settings
 from app.pipeline.deduplicator import deduplicate_products
+from app.pipeline.frame_deduplicator import FrameDeduplicator
 from app.pipeline.frame_extractor import extract_frames
 from app.pipeline.frame_filter import filter_frames
 from app.pipeline.image_generator import generate_studio_images
@@ -37,8 +38,15 @@ class PipelineOrchestrator:
                 max_frames=settings.frame_max_frames,
             )
 
+            self.jobs_repo.update_status(job_id, "DEDUPLICATING_FRAMES")
+            deduplicator = FrameDeduplicator(
+                hash_size=settings.frame_hash_size,
+                hamming_threshold=settings.frame_hamming_threshold,
+            )
+            unique_frames = deduplicator.deduplicate(filtered_frames)
+
             self.jobs_repo.update_status(job_id, "DETECTING")
-            products = detect_products(filtered_frames, self.bedrock_service, self.s3_service)
+            products = detect_products(unique_frames, self.bedrock_service, self.s3_service)
 
             self.jobs_repo.update_status(job_id, "DEDUPLICATING")
             unique_products = deduplicate_products(products)
