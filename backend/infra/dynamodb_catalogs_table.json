@@ -1,0 +1,17 @@
+{
+  "TableName": "kiranastudio-catalogs",
+  "BillingMode": "PAY_PER_REQUEST",
+  "AttributeDefinitions": [
+    { "AttributeName": "catalog_id", "AttributeType": "S" },
+    { "AttributeName": "job_id", "AttributeType": "S" }
+  ],
+  "KeySchema": [{ "AttributeName": "catalog_id", "KeyType": "HASH" }],
+  "GlobalSecondaryIndexes": [
+    {
+      "IndexName": "job_id-index",
+      "KeySchema": [{ "AttributeName": "job_id", "KeyType": "HASH" }],
+      "Projection": { "ProjectionType": "ALL" }
+    }
+  ]
+}
+

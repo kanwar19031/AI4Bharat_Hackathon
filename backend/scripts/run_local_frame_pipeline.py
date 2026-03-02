@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+"""
+Run from backend dir:  python scripts/run_local_frame_pipeline.py
+Run from repo root:    python backend/scripts/run_local_frame_pipeline.py
+"""
+
 import logging
 import sys
 from pathlib import Path
@@ -8,19 +13,18 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from app.config.settings import get_settings
 from app.pipeline.frame_extractor import extract_frames_with_ffmpeg
 from app.pipeline.frame_filter import filter_frames
 
-# Set this before running.
-VIDEO_PATH = r"C:\Users\mansi.valiramani\Desktop\test\ai4bharat\sample_video\chips.mp4"
-RAW_FRAMES_DIR = r"C:\Users\mansi.valiramani\Desktop\test\ai4bharat\output\raw_frames"
-LOG_FILE = r"C:\Users\mansi.valiramani\Desktop\test\ai4bharat\output\frame_pipeline_log4.txt"
+settings = get_settings()
 
-JPEG_QUALITY = 2
-# blur_detector mean-map score range is roughly 0.0 to 1.0 for this pipeline.
-BLUR_THRESHOLD = 0.11 #for blur_detector
-# BLUR_THRESHOLD = 150.0 # for Laplacian variance
-SSIM_THRESHOLD = 0.80
+VIDEO_PATH = Path(settings.resolved_local_videos_dir) / "chips.mp4"
+RAW_FRAMES_DIR = Path(settings.resolved_local_raw_frames_dir)
+LOG_FILE = Path(settings.resolved_local_logs_dir) / "frame_pipeline.txt"
+
+JPEG_QUALITY = settings.frame_jpeg_quality
+BLUR_THRESHOLD = settings.frame_blur_threshold
 MAX_FRAMES = None
 
 
@@ -42,16 +46,17 @@ def main() -> None:
         raise FileNotFoundError(f"Set VIDEO_PATH to a valid local file. Current: {VIDEO_PATH}")
 
     extraction = extract_frames_with_ffmpeg(
-        video_path=VIDEO_PATH,
-        output_dir=RAW_FRAMES_DIR,
+        video_path=str(VIDEO_PATH),
+        output_dir=str(RAW_FRAMES_DIR),
         jpeg_quality=JPEG_QUALITY,
+        scene_threshold=settings.frame_scene_threshold,
+        min_interval=settings.frame_min_interval,
         clean_output_dir=True,
     )
 
     filtered = filter_frames(
         extraction.frame_paths,
         blur_threshold=BLUR_THRESHOLD,
-        ssim_threshold=SSIM_THRESHOLD,
         max_frames=MAX_FRAMES,
     )
 

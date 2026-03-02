@@ -1,6 +1,13 @@
+# app/dependencies.py
+from __future__ import annotations
+
+import boto3
+
 from app.config.settings import get_settings
 from app.pipeline.orchestrator import PipelineOrchestrator
 from app.repo.catalogs_repo import CatalogsRepository
+from app.repo.dynamo_catalogs_repo import DynamoCatalogsRepository
+from app.repo.dynamo_jobs_repo import DynamoJobsRepository
 from app.repo.jobs_repo import JobsRepository
 from app.services.bedrock_service import BedrockService
 from app.services.dynamo_service import DynamoService
@@ -11,33 +18,98 @@ settings = get_settings()
 jobs_repo = JobsRepository()
 catalogs_repo = CatalogsRepository()
 
-s3_service = S3Service(settings)
-dynamo_service = DynamoService(settings)
 bedrock_service = BedrockService(settings)
 
-pipeline_orchestrator = PipelineOrchestrator(jobs_repo, catalogs_repo, bedrock_service)
+# NOTE: do NOT create AWS clients unless enabled
+_s3_service: S3Service | None = None
+_dynamo_service: DynamoService | None = None
+_pipeline_orchestrator: PipelineOrchestrator | None = None
+_dynamo_jobs_repo: DynamoJobsRepository | None = None
+_dynamo_catalogs_repo: DynamoCatalogsRepository | None = None
 
 
-def get_jobs_repo() -> JobsRepository:
+def _aws_credentials_present() -> bool:
+    return bool(settings.aws_access_key_id and settings.aws_secret_access_key)
+
+
+def _aws_db_enabled() -> bool:
+    if settings.use_aws_db:
+        return True
+    if not settings.auto_use_aws_db:
+        return False
+    return _aws_credentials_present()
+
+
+def _aws_storage_enabled() -> bool:
+    if settings.use_aws_storage:
+        return True
+    if not settings.auto_use_aws_storage:
+        return False
+
+    try:
+        # Avoid creating S3 clients unless credentials are actually resolvable.
+        creds = boto3.Session().get_credentials()
+        if creds is None:
+            return False
+        frozen = creds.get_frozen_credentials()
+        return bool(frozen and frozen.access_key and frozen.secret_key)
+    except Exception:
+        return False
+
+
+def get_jobs_repo():
+    global _dynamo_jobs_repo
+    if _aws_db_enabled():
+        dynamo = get_dynamo_service()
+        if dynamo is None:
+            return jobs_repo
+        if _dynamo_jobs_repo is None:
+            _dynamo_jobs_repo = DynamoJobsRepository(dynamo)
+        return _dynamo_jobs_repo
     return jobs_repo
 
 
-def get_catalogs_repo() -> CatalogsRepository:
+def get_catalogs_repo():
+    global _dynamo_catalogs_repo
+    if _aws_db_enabled():
+        dynamo = get_dynamo_service()
+        if dynamo is None:
+            return catalogs_repo
+        if _dynamo_catalogs_repo is None:
+            _dynamo_catalogs_repo = DynamoCatalogsRepository(dynamo)
+        return _dynamo_catalogs_repo
     return catalogs_repo
-
-
-def get_s3_service() -> S3Service:
-    return s3_service
-
-
-def get_dynamo_service() -> DynamoService:
-    return dynamo_service
 
 
 def get_bedrock_service() -> BedrockService:
     return bedrock_service
 
 
-def get_pipeline_orchestrator() -> PipelineOrchestrator:
-    return pipeline_orchestrator
+def get_s3_service() -> S3Service | None:
+    global _s3_service
+    if not _aws_storage_enabled():
+        return None
+    if _s3_service is None:
+        _s3_service = S3Service(settings)
+    return _s3_service
 
+
+def get_dynamo_service() -> DynamoService | None:
+    global _dynamo_service
+    if not _aws_db_enabled():
+        return None
+    if _dynamo_service is None:
+        _dynamo_service = DynamoService(settings)
+    return _dynamo_service
+
+
+def get_pipeline_orchestrator() -> PipelineOrchestrator:
+    global _pipeline_orchestrator
+    if _pipeline_orchestrator is None:
+        _pipeline_orchestrator = PipelineOrchestrator(
+            jobs_repo=jobs_repo,
+            catalogs_repo=catalogs_repo,
+            bedrock_service=bedrock_service,
+            s3_service=get_s3_service(),   # None in local mode
+        )
+    return _pipeline_orchestrator

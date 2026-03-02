@@ -9,3 +9,4 @@ blur-detector==0.0.6
 scikit-image==0.25.2
 numpy==2.2.6
 python-multipart==0.0.20
+pillow==11.3.0
