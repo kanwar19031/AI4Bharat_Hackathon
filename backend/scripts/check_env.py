@@ -24,7 +24,7 @@ PACKAGES = [
     ("pydantic_settings", "pydantic-settings"),
     ("dotenv", "python-dotenv"),
     ("cv2", "opencv-python"),
-    ("skimage", "scikit-image"),
+    ("imagehash", "imagehash"),
     ("numpy", "numpy"),
     ("python_multipart", "python-multipart"),
 ]
