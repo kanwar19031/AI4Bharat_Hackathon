@@ -23,27 +23,12 @@ class Settings(BaseSettings):
     jobs_table_name: str = "kiranastudio-jobs"
     catalogs_table_name: str = "kiranastudio-catalogs"
 
-    # Nova Pro — primary vision model (Amazon-owned, no Marketplace subscription needed)
+    # Nova Pro — primary vision model (OCR + multi-frame fusion)
     bedrock_nova_pro_model_id: str = "apac.amazon.nova-pro-v1:0"
-    # Claude (fallback — requires Marketplace subscription + payment method)
-    bedrock_claude_model_id: str = "anthropic.claude-3-haiku-20240307-v1:0"
-    # Amazon image generation models
-    bedrock_titan_image_model_id: str = "amazon.titan-image-generator-v2:0"
+    # Nova Canvas — background removal
     bedrock_nova_canvas_model_id: str = "amazon.nova-canvas-v1:0"
 
-    claude_max_tokens: int = 1200
-    claude_temperature: float = 0.1
-
-    # ---------- Titan Image v2 (legacy) ----------
-    titan_cfg_scale: float = 8.0
-    titan_width: int = 1024
-    titan_height: int = 1024
-    titan_quality: str = "standard"
-    titan_outpaint_mode: str = "PRECISE"
-
-    # ---------- Nova Canvas (recommended — 50% cheaper) ----------
-    nova_canvas_quality: str = "standard"       # "standard" ($0.04) or "premium" ($0.06)
-    nova_canvas_cfg_scale: float = 6.5           # 1.1-10; 6.5 is balanced default
+    # ---------- Nova Canvas ----------
     nova_canvas_region: str = "us-east-1"        # Nova Canvas only available in us-east-1, eu-west-1, ap-northeast-1
 
     presigned_url_expiry_seconds: int = 300
