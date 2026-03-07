@@ -48,10 +48,7 @@ export default function ProcessingPage() {
       <div className="page-header">
         <h1 className="page-title">Processing</h1>
         <p className="page-description">
-          Video ID: {videoId}
-          {job?.product_count
-            ? ` \u2014 ${job.product_count} products found`
-            : ""}
+          Analyzing your product video...
         </p>
       </div>
 

@@ -26,6 +26,20 @@ class BedrockService:
             kwargs["aws_secret_access_key"] = self.settings.aws_secret_access_key
         self.client = boto3.client("bedrock-runtime", **kwargs)
 
+        # Nova Canvas is only available in us-east-1/eu-west-1/ap-northeast-1
+        # Create a separate client for image generation if region differs
+        canvas_region = self.settings.nova_canvas_region
+        if canvas_region != self.settings.aws_region:
+            canvas_kwargs = {**kwargs, "region_name": canvas_region}
+            canvas_kwargs["config"] = Config(
+                retries={"max_attempts": 5, "mode": "standard"},
+                read_timeout=300,
+            )
+            self.canvas_client = boto3.client("bedrock-runtime", **canvas_kwargs)
+            logger.info("Nova Canvas client using region: %s", canvas_region)
+        else:
+            self.canvas_client = self.client
+
     def claude_detect_products_json(self, image_bytes: bytes, media_type: str = "image/jpeg") -> dict:
         """
         Returns dict parsed from Claude JSON output.
@@ -129,6 +143,17 @@ class BedrockService:
             ],
         }
 
+        logger.info(
+            "[BEDROCK] Nova Pro request — model=%s region=%s "
+            "image_size=%.1f KB (base64=%d chars) maxTokens=%d temp=%.1f",
+            self.settings.bedrock_nova_pro_model_id,
+            self.settings.aws_region,
+            len(image_bytes) / 1024,
+            len(b64),
+            self.settings.claude_max_tokens,
+            self.settings.claude_temperature,
+        )
+
         resp = self.client.invoke_model(
             modelId=self.settings.bedrock_nova_pro_model_id,
             body=json.dumps(body),
@@ -150,15 +175,30 @@ class BedrockService:
             text = text.rsplit("```", 1)[0]
         text = text.strip()
 
+        logger.info(
+            "[BEDROCK] Nova Pro response — text_length=%d chars",
+            len(text),
+        )
+
         return json.loads(text)
 
     def detect_products_json(self, image_bytes: bytes, media_type: str = "image/jpeg") -> dict:
         """Unified product detection — uses Nova Pro (primary), falls back to Claude."""
+        logger.info(
+            "[BEDROCK] detect_products_json called — image=%.1f KB type=%s",
+            len(image_bytes) / 1024, media_type,
+        )
         try:
-            return self.nova_detect_products_json(image_bytes, media_type)
+            result = self.nova_detect_products_json(image_bytes, media_type)
+            logger.info("[BEDROCK] Detection success via Nova Pro — %d products",
+                        len(result.get('products', [])))
+            return result
         except Exception as nova_err:
             logger.warning("Nova Pro detection failed (%s), trying Claude...", nova_err)
-            return self.claude_detect_products_json(image_bytes, media_type)
+            result = self.claude_detect_products_json(image_bytes, media_type)
+            logger.info("[BEDROCK] Detection success via Claude — %d products",
+                        len(result.get('products', [])))
+            return result
 
     # ------------------------------------------------------------------
     # Titan Image Generator v2 (legacy — kept for backward compatibility)
@@ -266,7 +306,7 @@ class BedrockService:
         logger.info("Nova Canvas OUTPAINTING request (mask_mode=%s)",
                     "image" if mask_bytes else "prompt")
 
-        resp = self.client.invoke_model(
+        resp = self.canvas_client.invoke_model(
             modelId=self.settings.bedrock_nova_canvas_model_id,
             body=json.dumps(body),
             accept="application/json",
@@ -304,7 +344,7 @@ class BedrockService:
 
         logger.info("Nova Canvas BACKGROUND_REMOVAL request")
 
-        resp = self.client.invoke_model(
+        resp = self.canvas_client.invoke_model(
             modelId=self.settings.bedrock_nova_canvas_model_id,
             body=json.dumps(body),
             accept="application/json",

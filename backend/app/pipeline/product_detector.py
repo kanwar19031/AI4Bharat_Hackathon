@@ -1,8 +1,12 @@
+import json
+import logging
 from pathlib import Path
 
 from app.config.settings import get_settings
 from app.services.bedrock_service import BedrockService
 from app.services.s3_service import S3Service
+
+logger = logging.getLogger(__name__)
 
 
 class ProductDetector:
@@ -34,30 +38,76 @@ def detect_products(
 
     all_products = []
 
-    for key in frame_keys:
+    logger.info("=" * 60)
+    logger.info("PRODUCT DETECTION — Starting detection on %d frames", len(frame_keys))
+    logger.info("=" * 60)
+
+    for frame_idx, key in enumerate(frame_keys, start=1):
         try:
-            # -------- LOCAL FILE --------
+            # -------- LOAD FRAME --------
             if Path(key).exists():
                 with open(key, "rb") as f:
                     img_bytes = f.read()
-
-            # -------- S3 FILE --------
+                source = "LOCAL"
             else:
                 img_bytes = s3_service.download_bytes(
                     settings.s3_bucket, key
                 )
+                source = "S3"
 
+            logger.info(
+                "[DETECT] Frame %d/%d — source=%s path=%s size=%d bytes (%.1f KB)",
+                frame_idx, len(frame_keys), source, key,
+                len(img_bytes), len(img_bytes) / 1024,
+            )
+
+            # -------- SEND TO VISION MODEL --------
+            logger.info(
+                "[DETECT] Sending frame to vision model (Nova Pro → Claude fallback)..."
+            )
             result = bedrock_service.detect_products_json(
                 img_bytes,
                 media_type="image/jpeg",
             )
 
-            for p in result.get("products", []):
+            products_found = result.get("products", [])
+            logger.info(
+                "[DETECT] Frame %d/%d — Model returned %d products",
+                frame_idx, len(frame_keys), len(products_found),
+            )
+
+            # Log each detected product
+            for p_idx, p in enumerate(products_found, start=1):
+                logger.info(
+                    "[DETECT]   Product %d: brand=%s name=%s weight=%s mrp=%s "
+                    "confidence=%.2f bbox=%s",
+                    p_idx,
+                    p.get("brand"),
+                    p.get("product_name"),
+                    p.get("net_weight"),
+                    p.get("mrp"),
+                    p.get("confidence", 0),
+                    p.get("bbox"),
+                )
                 p["frame_key"] = key
                 all_products.append(p)
 
+            # Log raw JSON for debugging (truncated)
+            raw_json = json.dumps(result, indent=2, default=str)
+            if len(raw_json) > 2000:
+                raw_json = raw_json[:2000] + "\n... (truncated)"
+            logger.info("[DETECT] Raw model response:\n%s", raw_json)
+
         except Exception as e:
-            print(f"[DETECT ERROR] Frame {key}: {e}")
+            logger.error("[DETECT ERROR] Frame %d/%d key=%s: %s",
+                         frame_idx, len(frame_keys), key, e)
             continue
+
+    logger.info("=" * 60)
+    logger.info(
+        "PRODUCT DETECTION — Complete. Total products from all frames: %d",
+        len(all_products),
+    )
+    logger.info("=" * 60)
 
     return all_products

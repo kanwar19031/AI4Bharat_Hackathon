@@ -52,9 +52,10 @@ def normalize_catalog_products(products: list[dict]) -> list[dict]:
         if not item.get("product_id"):
             item["product_id"] = str(uuid4())
 
-        net_weight_text = _net_weight_to_text(item.get("net_weight"))
-        if net_weight_text is not None:
-            item["net_weight"] = net_weight_text
+        # Always normalize net_weight — convert dict to string or None
+        raw_net_weight = item.get("net_weight")
+        if raw_net_weight is not None:
+            item["net_weight"] = _net_weight_to_text(raw_net_weight)
 
         price = _mrp_to_price(item.get("mrp"))
         if price is not None and item.get("price") is None:

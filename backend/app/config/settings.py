@@ -44,6 +44,7 @@ class Settings(BaseSettings):
     # ---------- Nova Canvas (recommended — 50% cheaper) ----------
     nova_canvas_quality: str = "standard"       # "standard" ($0.04) or "premium" ($0.06)
     nova_canvas_cfg_scale: float = 6.5           # 1.1-10; 6.5 is balanced default
+    nova_canvas_region: str = "us-east-1"        # Nova Canvas only available in us-east-1, eu-west-1, ap-northeast-1
 
     presigned_url_expiry_seconds: int = 300
     cors_origins: str = "*"

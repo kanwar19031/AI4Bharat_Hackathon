@@ -20,18 +20,43 @@ export interface ProcessJobResponse {
   message: string;
 }
 
+export interface NutritionFacts {
+  energy?: string | null;
+  protein?: string | null;
+  fat?: string | null;
+  carbs?: string | null;
+  sodium?: string | null;
+  [key: string]: string | null | undefined;
+}
+
+export interface ProductImage {
+  image_id: string;
+  image_url: string;
+  frame_type?: string | null;
+}
+
 export interface CatalogProduct {
   product_id: string;
   brand: string | null;
   product_name: string;
-  net_weight: string | null;
   variant: string | null;
+  category: string | null;
+  net_weight: string | null;
   price: number | null;
   image_url: string | null;
-  confidence?: number;
-  evidence?: string[];
-  frame_key?: string;
-  bbox?: { x: number; y: number; w: number; h: number };
+
+  // Rich fields from multi-frame extraction
+  ingredients: string | null;
+  nutrition_facts: NutritionFacts | null;
+  barcode: string | null;
+  fssai_license: string | null;
+  manufacturer: string | null;
+  shelf_life: string | null;
+  description: string | null;
+  tags: string[] | null;
+
+  // Multiple angle images
+  images: ProductImage[] | null;
 }
 
 export interface CatalogResponse {
@@ -61,19 +86,19 @@ export type PipelineStep =
   | "EXTRACTING"
   | "FILTERING"
   | "DEDUPLICATING_FRAMES"
-  | "DETECTING"
-  | "DEDUPLICATING"
-  | "GENERATING"
+  | "READING_TEXT"
+  | "EXTRACTING_DETAILS"
+  | "GENERATING_IMAGES"
   | "FORMATTING"
   | "COMPLETED"
   | "FAILED";
 
 export const PIPELINE_STEPS: { key: PipelineStep; label: string }[] = [
-  { key: "EXTRACTING", label: "Extracting frames" },
-  { key: "FILTERING", label: "Filtering frames" },
-  { key: "DEDUPLICATING_FRAMES", label: "Deduplicating frames" },
-  { key: "DETECTING", label: "Detecting products" },
-  { key: "DEDUPLICATING", label: "Deduplicating products" },
-  { key: "GENERATING", label: "Generating images" },
+  { key: "EXTRACTING", label: "Extracting frames from video" },
+  { key: "FILTERING", label: "Filtering blurry frames" },
+  { key: "DEDUPLICATING_FRAMES", label: "Removing duplicate frames" },
+  { key: "READING_TEXT", label: "Reading text from product labels" },
+  { key: "EXTRACTING_DETAILS", label: "Extracting product details" },
+  { key: "GENERATING_IMAGES", label: "Generating studio images" },
   { key: "FORMATTING", label: "Formatting catalog" },
 ];

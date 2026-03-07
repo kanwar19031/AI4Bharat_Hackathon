@@ -1,4 +1,5 @@
 import io
+import json
 import logging
 import uuid
 from pathlib import Path
@@ -38,6 +39,11 @@ class ImageGenerator:
         """
         crop = Image.open(io.BytesIO(crop_bytes)).convert("RGBA")
 
+        logger.info(
+            "[IMGGEN] Input crop: %dx%d pixels, %.1f KB",
+            crop.size[0], crop.size[1], len(crop_bytes) / 1024,
+        )
+
         canvas = Image.new("RGBA", (size, size), (255, 255, 255, 255))
 
         max_w = int(size * (1.0 - padding_ratio * 2))
@@ -57,6 +63,15 @@ class ImageGenerator:
         canvas.convert("RGB").save(canvas_bytes, format="PNG")
         mask_bytes = io.BytesIO()
         mask.save(mask_bytes, format="PNG")
+
+        canvas_size = len(canvas_bytes.getvalue())
+        mask_size = len(mask_bytes.getvalue())
+        logger.info(
+            "[IMGGEN] Canvas: %dx%d, %.1f KB | Mask: %.1f KB | "
+            "Product placed at (%d,%d), resized to %dx%d",
+            size, size, canvas_size / 1024, mask_size / 1024,
+            x, y, crop.size[0], crop.size[1],
+        )
 
         return canvas_bytes.getvalue(), mask_bytes.getvalue()
 
@@ -79,12 +94,33 @@ class ImageGenerator:
         )
         negative = "blurry, distorted text, watermark, artifacts, extra objects"
 
-        return self.bedrock.nova_canvas_outpaint(
+        logger.info(
+            "[IMGGEN] Sending to Nova Canvas OUTPAINTING:\n"
+            "  Model: amazon.nova-canvas-v1:0\n"
+            "  Region: %s\n"
+            "  Canvas size: %.1f KB\n"
+            "  Mask size: %.1f KB\n"
+            "  Prompt: %s\n"
+            "  Negative: %s",
+            self.bedrock.settings.nova_canvas_region,
+            len(canvas_bytes) / 1024,
+            len(mask_bytes) / 1024,
+            prompt,
+            negative,
+        )
+
+        result = self.bedrock.nova_canvas_outpaint(
             image_bytes=canvas_bytes,
             mask_bytes=mask_bytes,
             prompt=prompt,
             negative=negative,
         )
+
+        logger.info(
+            "[IMGGEN] Nova Canvas returned image: %.1f KB",
+            len(result) / 1024,
+        )
+        return result
 
     def save_studio_locally(self, crop_bytes: bytes, out_path: str) -> str:
         """Generate studio image via Nova Canvas and write to local filesystem."""
@@ -93,7 +129,8 @@ class ImageGenerator:
         path = Path(out_path)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(out_img_bytes)
-        logger.info("Saved studio image to %s", path)
+        logger.info("[IMGGEN] Saved studio image to %s (%.1f KB)",
+                     path, len(out_img_bytes) / 1024)
         return str(path)
 
     def generate_studio_to_s3(self, crop_bytes: bytes, out_bucket: str, out_key: str) -> dict:
@@ -171,11 +208,26 @@ def generate_studio_images(
     output_local_dir = str(Path(settings.local_generated_images_dir) / video_id)
     os.makedirs(output_local_dir, exist_ok=True)
 
-    for product in products:
+    logger.info("=" * 60)
+    logger.info("IMAGE GENERATION — Starting for %d products (video_id=%s)",
+                len(products), video_id)
+    logger.info("=" * 60)
+
+    for prod_idx, product in enumerate(products, start=1):
         frame_key = product.get("frame_key")
         bbox = product.get("bbox")
 
+        logger.info(
+            "[IMGGEN] Product %d/%d: name=%s brand=%s frame_key=%s bbox=%s",
+            prod_idx, len(products),
+            product.get("product_name"),
+            product.get("brand"),
+            frame_key,
+            bbox,
+        )
+
         if not frame_key:
+            logger.warning("[IMGGEN] No frame_key — skipping image generation")
             product["image_url"] = None
             continue
 
@@ -184,12 +236,26 @@ def generate_studio_images(
             if Path(frame_key).exists():
                 frame_bytes = Path(frame_key).read_bytes()
                 local_mode = True
+                logger.info("[IMGGEN] Loaded frame from LOCAL: %s (%.1f KB)",
+                           frame_key, len(frame_bytes) / 1024)
             else:
                 frame_bytes = s3_service.download_bytes(settings.s3_bucket, frame_key)
                 local_mode = False
+                logger.info("[IMGGEN] Loaded frame from S3: %s (%.1f KB)",
+                           frame_key, len(frame_bytes) / 1024)
 
             # -------- CROP USING BBOX --------
-            crop_bytes = _crop_from_bbox(frame_bytes, bbox) if bbox else frame_bytes
+            if bbox:
+                logger.info(
+                    "[IMGGEN] Cropping with bbox: x=%.3f y=%.3f w=%.3f h=%.3f",
+                    bbox.get("x", 0), bbox.get("y", 0),
+                    bbox.get("w", 0), bbox.get("h", 0),
+                )
+                crop_bytes = _crop_from_bbox(frame_bytes, bbox)
+                logger.info("[IMGGEN] Crop result: %.1f KB", len(crop_bytes) / 1024)
+            else:
+                logger.info("[IMGGEN] No bbox — using full frame as input")
+                crop_bytes = frame_bytes
 
             product_id = product.get("product_id") or str(uuid.uuid4())
             product["product_id"] = product_id
@@ -199,6 +265,8 @@ def generate_studio_images(
                 out_path = str(Path(output_local_dir) / f"{product_id}.png")
                 saved_path = gen.save_studio_locally(crop_bytes, out_path)
                 product["image_url"] = saved_path
+                logger.info("[IMGGEN] ✓ Product %d/%d saved locally: %s",
+                           prod_idx, len(products), saved_path)
 
             # -------- S3 MODE --------
             else:
@@ -211,11 +279,22 @@ def generate_studio_images(
                 product["image_url"] = (
                     f"https://{settings.s3_bucket}.s3.{settings.aws_region}.amazonaws.com/{out_key}"
                 )
+                logger.info("[IMGGEN] ✓ Product %d/%d uploaded to S3: %s",
+                           prod_idx, len(products), product["image_url"])
 
         except Exception as e:
-            logger.error("Image generation failed for product %s: %s",
+            logger.error("[IMGGEN] ✗ Image generation failed for product %s: %s",
                          product.get("product_name"), e)
             product["image_url"] = None
+
+    success_count = sum(1 for p in products if p.get("image_url"))
+    fail_count = len(products) - success_count
+    logger.info("=" * 60)
+    logger.info(
+        "IMAGE GENERATION — Complete. success=%d failed=%d total=%d",
+        success_count, fail_count, len(products),
+    )
+    logger.info("=" * 60)
 
     return products
 
@@ -238,6 +317,11 @@ def _crop_from_bbox(frame_bytes: bytes, bbox: dict, margin: float = 0.08) -> byt
     top = int(y0 * H)
     right = int(x1 * W)
     bottom = int(y1 * H)
+
+    logger.info(
+        "[IMGGEN] Crop pixels: (%d,%d) -> (%d,%d) from %dx%d frame",
+        left, top, right, bottom, W, H,
+    )
 
     crop = img.crop((left, top, right, bottom))
 
