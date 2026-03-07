@@ -40,6 +40,22 @@ class JobStatusResponse(BaseModel):
     updated_at: datetime
 
 
+class NutritionFacts(BaseModel):
+    model_config = {"extra": "allow"}
+    energy: str | None = None
+    protein: str | None = None
+    fat: str | None = None
+    carbs: str | None = None
+    sodium: str | None = None
+
+
+class ProductImage(BaseModel):
+    model_config = {"extra": "allow"}
+    image_id: str
+    image_url: str
+    frame_type: str | None = None
+
+
 class CatalogProduct(BaseModel):
     model_config = {"extra": "allow"}
 
@@ -47,10 +63,24 @@ class CatalogProduct(BaseModel):
     brand: str | None = None
     product_name: str
 
-    net_weight: str | None = None
     variant: str | None = None
+    category: str | None = None
+    net_weight: str | None = None
     price: float | None = None
     image_url: str | None = None
+
+    # Rich fields from multi-frame extraction
+    ingredients: str | None = None
+    nutrition_facts: NutritionFacts | dict | None = None
+    barcode: str | None = None
+    fssai_license: str | None = None
+    manufacturer: str | None = None
+    shelf_life: str | None = None
+    description: str | None = None
+    tags: list[str] | None = None
+
+    # Multiple images from different angles
+    images: list[ProductImage] | list[dict] | None = None
 
 
 class CatalogResponse(BaseModel):
@@ -69,4 +99,3 @@ class UpdateCatalogRequest(BaseModel):
 class UpdateCatalogResponse(BaseModel):
     status: str
     catalog_id: str
-
