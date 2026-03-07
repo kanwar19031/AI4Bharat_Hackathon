@@ -23,10 +23,11 @@ class Settings(BaseSettings):
     jobs_table_name: str = "kiranastudio-jobs"
     catalogs_table_name: str = "kiranastudio-catalogs"
 
-    # Temporarily using Sonnet while Haiku Marketplace subscription activates
-    # Once Haiku is enabled, override via .env: BEDROCK_CLAUDE_MODEL_ID=anthropic.claude-3-haiku-20240307-v1:0
-    bedrock_claude_model_id: str = "anthropic.claude-3-sonnet-20240229-v1:0"
-    # Amazon models: available directly in ap-south-1 (no prefix needed)
+    # Nova Pro — primary vision model (Amazon-owned, no Marketplace subscription needed)
+    bedrock_nova_pro_model_id: str = "apac.amazon.nova-pro-v1:0"
+    # Claude (fallback — requires Marketplace subscription + payment method)
+    bedrock_claude_model_id: str = "anthropic.claude-3-haiku-20240307-v1:0"
+    # Amazon image generation models
     bedrock_titan_image_model_id: str = "amazon.titan-image-generator-v2:0"
     bedrock_nova_canvas_model_id: str = "amazon.nova-canvas-v1:0"
 

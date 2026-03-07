@@ -12,7 +12,7 @@ class ProductDetector:
 
     def detect_from_frame_s3(self, bucket: str, key: str) -> dict:
         img_bytes = self.s3.download_bytes(bucket, key)
-        result = self.bedrock.claude_detect_products_json(img_bytes, media_type="image/jpeg")
+        result = self.bedrock.detect_products_json(img_bytes, media_type="image/jpeg")
         return result
 
 
@@ -47,7 +47,7 @@ def detect_products(
                     settings.s3_bucket, key
                 )
 
-            result = bedrock_service.claude_detect_products_json(
+            result = bedrock_service.detect_products_json(
                 img_bytes,
                 media_type="image/jpeg",
             )

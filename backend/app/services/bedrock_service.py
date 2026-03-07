@@ -83,6 +83,84 @@ class BedrockService:
         return json.loads(text)
 
     # ------------------------------------------------------------------
+    # Amazon Nova Pro (primary vision model — no Marketplace payment needed)
+    # ------------------------------------------------------------------
+
+    def nova_detect_products_json(self, image_bytes: bytes, media_type: str = "image/jpeg") -> dict:
+        """Detect products using Amazon Nova Pro vision model."""
+        b64 = base64.b64encode(image_bytes).decode("utf-8")
+
+        system_prompt = (
+            "You are a retail product extraction engine.\n"
+            "Extract distinct sellable packaged products visible in the image.\n"
+            "Return STRICT JSON ONLY (no markdown, no commentary, no code fences).\n"
+            "Do not hallucinate weights/MRP if not clearly visible.\n"
+            "Fields per product:\n"
+            "- brand (string|null)\n"
+            "- product_name (string)\n"
+            "- net_weight: {value:number, unit:'g'|'kg'|'ml'|'l'|'pcs'} | null\n"
+            "- mrp: {value:number, currency:'INR'} | null\n"
+            "- confidence (0..1)\n"
+            "- bbox: {x,y,w,h} normalized 0..1 (best-effort)\n"
+            "- evidence: {visible_text: [string,...]}\n"
+            "Output schema:\n"
+            "{'products':[...]} only."
+        )
+
+        body = {
+            "system": [{"text": system_prompt}],
+            "inferenceConfig": {
+                "maxTokens": self.settings.claude_max_tokens,
+                "temperature": self.settings.claude_temperature,
+            },
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "image": {
+                                "format": media_type.split("/")[-1],
+                                "source": {"bytes": b64},
+                            }
+                        },
+                        {"text": "Extract all products from this shelf image."},
+                    ],
+                }
+            ],
+        }
+
+        resp = self.client.invoke_model(
+            modelId=self.settings.bedrock_nova_pro_model_id,
+            body=json.dumps(body),
+            accept="application/json",
+            contentType="application/json",
+        )
+
+        payload = json.loads(resp["body"].read())
+        text = ""
+        for block in payload.get("output", {}).get("message", {}).get("content", []):
+            if "text" in block:
+                text += block["text"]
+
+        # Strip any markdown fences if present
+        text = text.strip()
+        if text.startswith("```"):
+            text = text.split("\n", 1)[-1]
+        if text.endswith("```"):
+            text = text.rsplit("```", 1)[0]
+        text = text.strip()
+
+        return json.loads(text)
+
+    def detect_products_json(self, image_bytes: bytes, media_type: str = "image/jpeg") -> dict:
+        """Unified product detection — uses Nova Pro (primary), falls back to Claude."""
+        try:
+            return self.nova_detect_products_json(image_bytes, media_type)
+        except Exception as nova_err:
+            logger.warning("Nova Pro detection failed (%s), trying Claude...", nova_err)
+            return self.claude_detect_products_json(image_bytes, media_type)
+
+    # ------------------------------------------------------------------
     # Titan Image Generator v2 (legacy — kept for backward compatibility)
     # ------------------------------------------------------------------
 
