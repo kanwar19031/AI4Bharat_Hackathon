@@ -18,14 +18,15 @@ class Settings(BaseSettings):
     aws_access_key_id: str = ""
     aws_secret_access_key: str = ""
 
-    s3_videos_bucket: str = "kiranastudio-videos"
-    s3_frames_bucket: str = "kiranastudio-frames"
-    s3_images_bucket: str = "kiranastudio-images"
+    s3_bucket: str = "kiranastudio"  # single bucket; folders: videos/, frames/, images/
 
     jobs_table_name: str = "kiranastudio-jobs"
     catalogs_table_name: str = "kiranastudio-catalogs"
 
-    bedrock_claude_model_id: str = "anthropic.claude-3-5-haiku-20241022-v1:0"
+    # Temporarily using Sonnet while Haiku Marketplace subscription activates
+    # Once Haiku is enabled, override via .env: BEDROCK_CLAUDE_MODEL_ID=anthropic.claude-3-haiku-20240307-v1:0
+    bedrock_claude_model_id: str = "anthropic.claude-3-sonnet-20240229-v1:0"
+    # Amazon models: available directly in ap-south-1 (no prefix needed)
     bedrock_titan_image_model_id: str = "amazon.titan-image-generator-v2:0"
     bedrock_nova_canvas_model_id: str = "amazon.nova-canvas-v1:0"
 

@@ -44,7 +44,7 @@ def detect_products(
             # -------- S3 FILE --------
             else:
                 img_bytes = s3_service.download_bytes(
-                    settings.s3_frames_bucket, key
+                    settings.s3_bucket, key
                 )
 
             result = bedrock_service.claude_detect_products_json(

@@ -14,14 +14,17 @@ logger = logging.getLogger(__name__)
 class BedrockService:
     def __init__(self, settings=None):
         self.settings = settings or _settings
-        self.client = boto3.client(
-            "bedrock-runtime",
-            region_name=self.settings.aws_region,
-            config=Config(
+        kwargs: dict = {
+            "region_name": self.settings.aws_region,
+            "config": Config(
                 retries={"max_attempts": 5, "mode": "standard"},
-                read_timeout=300,  # Nova Canvas can take >60s for high-quality images
+                read_timeout=300,
             ),
-        )
+        }
+        if self.settings.aws_access_key_id and self.settings.aws_secret_access_key:
+            kwargs["aws_access_key_id"] = self.settings.aws_access_key_id
+            kwargs["aws_secret_access_key"] = self.settings.aws_secret_access_key
+        self.client = boto3.client("bedrock-runtime", **kwargs)
 
     def claude_detect_products_json(self, image_bytes: bytes, media_type: str = "image/jpeg") -> dict:
         """

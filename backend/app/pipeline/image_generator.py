@@ -185,7 +185,7 @@ def generate_studio_images(
                 frame_bytes = Path(frame_key).read_bytes()
                 local_mode = True
             else:
-                frame_bytes = s3_service.download_bytes(settings.s3_frames_bucket, frame_key)
+                frame_bytes = s3_service.download_bytes(settings.s3_bucket, frame_key)
                 local_mode = False
 
             # -------- CROP USING BBOX --------
@@ -205,11 +205,11 @@ def generate_studio_images(
                 out_key = f"images/{video_id}/{product_id}.png"
                 gen.generate_studio_to_s3(
                     crop_bytes,
-                    settings.s3_images_bucket,
+                    settings.s3_bucket,
                     out_key,
                 )
                 product["image_url"] = (
-                    f"https://{settings.s3_images_bucket}.s3.{settings.aws_region}.amazonaws.com/{out_key}"
+                    f"https://{settings.s3_bucket}.s3.{settings.aws_region}.amazonaws.com/{out_key}"
                 )
 
         except Exception as e:

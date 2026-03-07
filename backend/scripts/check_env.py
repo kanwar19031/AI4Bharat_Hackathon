@@ -66,7 +66,7 @@ def check_config() -> None:
         print("  Config (.env / env): loaded")
         print(f"    environment={s.environment}, api_prefix={s.api_v1_prefix}")
         print(f"    aws_region={s.aws_region}")
-        print(f"    s3 buckets: videos={s.s3_videos_bucket}, frames={s.s3_frames_bucket}, images={s.s3_images_bucket}")
+        print(f"    s3 bucket: {s.s3_bucket} (folders: videos/, frames/, images/)")
         print(f"    dynamodb: jobs={s.jobs_table_name}, catalogs={s.catalogs_table_name}")
         has_creds = bool(s.aws_access_key_id and s.aws_secret_access_key)
         print(f"    AWS credentials set: {'yes' if has_creds else 'no (use .env or default credential chain)'}")

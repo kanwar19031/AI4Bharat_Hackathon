@@ -13,11 +13,14 @@ from app.config.settings import Settings
 class S3Service:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
-        self.client = boto3.client(
-            "s3",
-            region_name=self.settings.aws_region,
-            config=Config(retries={"max_attempts": 5, "mode": "standard"}),
-        )
+        kwargs: dict = {
+            "region_name": self.settings.aws_region,
+            "config": Config(retries={"max_attempts": 5, "mode": "standard"}),
+        }
+        if self.settings.aws_access_key_id and self.settings.aws_secret_access_key:
+            kwargs["aws_access_key_id"] = self.settings.aws_access_key_id
+            kwargs["aws_secret_access_key"] = self.settings.aws_secret_access_key
+        self.client = boto3.client("s3", **kwargs)
 
     def build_video_key(self, video_id: str) -> str:
         return f"videos/{video_id}.mp4"
@@ -33,7 +36,7 @@ class S3Service:
         return self.client.generate_presigned_url(
             "put_object",
             Params={
-                "Bucket": self.settings.s3_videos_bucket,
+                "Bucket": self.settings.s3_bucket,
                 "Key": key,
                 "ContentType": content_type,
             },

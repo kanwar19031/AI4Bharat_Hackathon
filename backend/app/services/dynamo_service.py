@@ -17,11 +17,14 @@ class DynamoService:
     @property
     def resource(self):
         if self._resource is None:
-            self._resource = boto3.resource(
-                "dynamodb",
-                region_name=self.settings.aws_region,
-                config=Config(retries={"max_attempts": 5, "mode": "standard"}),
-            )
+            kwargs: dict = {
+                "region_name": self.settings.aws_region,
+                "config": Config(retries={"max_attempts": 5, "mode": "standard"}),
+            }
+            if self.settings.aws_access_key_id and self.settings.aws_secret_access_key:
+                kwargs["aws_access_key_id"] = self.settings.aws_access_key_id
+                kwargs["aws_secret_access_key"] = self.settings.aws_secret_access_key
+            self._resource = boto3.resource("dynamodb", **kwargs)
         return self._resource
 
     def table(self, table_name: str):

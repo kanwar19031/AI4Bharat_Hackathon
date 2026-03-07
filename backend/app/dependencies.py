@@ -28,26 +28,9 @@ _dynamo_jobs_repo: DynamoJobsRepository | None = None
 _dynamo_catalogs_repo: DynamoCatalogsRepository | None = None
 
 
-def _aws_credentials_present() -> bool:
-    return bool(settings.aws_access_key_id and settings.aws_secret_access_key)
-
-
-def _aws_db_enabled() -> bool:
-    if settings.use_aws_db:
-        return True
-    if not settings.auto_use_aws_db:
-        return False
-    return _aws_credentials_present()
-
-
-def _aws_storage_enabled() -> bool:
-    if settings.use_aws_storage:
-        return True
-    if not settings.auto_use_aws_storage:
-        return False
-
+def _aws_credentials_resolvable() -> bool:
+    """Check if AWS credentials are actually resolvable via the full boto3 chain."""
     try:
-        # Avoid creating S3 clients unless credentials are actually resolvable.
         creds = boto3.Session().get_credentials()
         if creds is None:
             return False
@@ -55,6 +38,22 @@ def _aws_storage_enabled() -> bool:
         return bool(frozen and frozen.access_key and frozen.secret_key)
     except Exception:
         return False
+
+
+def _aws_db_enabled() -> bool:
+    if settings.use_aws_db:
+        return True
+    if not settings.auto_use_aws_db:
+        return False
+    return _aws_credentials_resolvable()
+
+
+def _aws_storage_enabled() -> bool:
+    if settings.use_aws_storage:
+        return True
+    if not settings.auto_use_aws_storage:
+        return False
+    return _aws_credentials_resolvable()
 
 
 def get_jobs_repo():
